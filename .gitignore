@@ -6,5 +6,7 @@ firebase/alumniconnect-b407a-firebase-adminsdk-35dto-c3375a0345.json
 firebase/connectplatform-b89b4-268988303f18.json
 firebase/alumniconnect-adminsdk.json
 firebase/alumniconnect-adminsdk.json
+firebase/*.json
+
 env/
 .env
