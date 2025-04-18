@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Load Firebase credentials
-admin_portal_cred = credentials.Certificate('firebase/alumniconnect-b407a-firebase-adminsdk-35dto-ea2199a869.json')
+admin_portal_cred = credentials.Certificate('firebase/alumniconnect-b407a-firebase-adminsdk-35dto-c3375a0345.json')
 
 # Initialize the Firebase app with a unique name
 admin_portal_app = firebase_admin.initialize_app(admin_portal_cred, name='AlumniConnect')

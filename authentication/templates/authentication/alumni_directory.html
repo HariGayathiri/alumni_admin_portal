@@ -1271,6 +1271,21 @@ table tr:hover {
                 font-size: 0.9rem;
             }
         }
+        .white-button {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    font-size: 16px;
+    width: 150px; /* Ensures all buttons are same width */
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+.button-container {
+    display: flex;
+    gap: 10px;
+}
         
     </style>
 </head>
@@ -1332,7 +1347,7 @@ table tr:hover {
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="file" name="file" id="fileInput" accept=".xls,.xlsx" style="display: none;">
-                    <button class="white-button" id="uploadBtn" type="button">Upload Excel</button>
+                    <button class="white-button " id="uploadBtn" type="button">Upload Excel</button>
                 </form>
             
                 <!-- Toast message for success -->

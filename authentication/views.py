@@ -118,7 +118,7 @@ def send_otp_email(email, otp):
     send_mail(
         'Password Reset OTP',
         f'Your OTP for resetting your admin password is: {otp}. It is valid for 10 minutes.',
-        'suresh179073@gmail.com',  # Your sender email
+        'periyaruniversity08@gmail.com',  # Your sender email
         [email],
         fail_silently=False,
     )
@@ -516,7 +516,7 @@ def save_story(request):
                 'title': title,
                 'description': description,
                 'images': images,
-                'created_at': datetime.utcnow().isoformat()  # Add a timestamp
+                'created_at': datetime.datetime.utcnow().isoformat()  # Add a timestamp
             })
 
             return JsonResponse({'success': True, 'message': 'Success story saved successfully!'})
@@ -535,7 +535,7 @@ from firebase_admin import credentials, firestore
 from datetime import datetime
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate("firebase/alumniconnect-adminsdk.json")  # Replace with your Firebase Admin SDK path
+cred = credentials.Certificate("firebase/alumniconnect-b407a-firebase-adminsdk-35dto-c3375a0345.json")  # Replace with your Firebase Admin SDK path
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
