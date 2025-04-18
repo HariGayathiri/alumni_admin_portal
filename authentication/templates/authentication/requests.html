@@ -1,0 +1,441 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Student Requests</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-6Bsm3T0pcPGeUloBku60B+mHsEO0Cqj8PUHpEc9x9KAX2QPSbz96I1h9a/ufkdBt" crossorigin="anonymous">
+<!-- Bootstrap JS (Popper.js included) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-qL5fFxYOKnvXtPZHg4Csyfnpnwn01/rMdVECchEJWtQKeUJ1x3OKq3wgyIH9PpFc" crossorigin="anonymous"></script>
+
+<!-- Font Awesome for Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" integrity="sha384-pMjXONtJlDjciRphfhLafRR0Lbzg2B45sHq2Ffy/9MyFoycAU/vH+PjG9qMFgLeY" crossorigin="anonymous">
+
+    <style>
+         body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f5f6fa;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-right: 1px solid #e0e0e0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2000;
+    color: black;
+}
+
+.sidebar .logo-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+}
+
+.sidebar .logo-container img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.sidebar .logo-container h2 {
+    font-family: 'Baloo', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+    margin: 0;
+}
+
+.horizontal-line {
+    width: 90%;
+    height: 1px;
+    background-color: #000000;
+    margin: 5px auto;
+}
+
+.sidebar a {
+    color: black;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-family: Tilt Neon;
+    font-weight: bold;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: rgba(66, 11, 234, 0.09);
+    color: #420bea;
+}
+
+.sidebar .submenu {
+    display: none;
+    padding-left: 20px;
+    font-family: Tilt Neon;
+    font-weight: bold;
+}
+
+.sidebar .submenu a {
+    font-size: 16px;
+    color: #080808;
+}
+
+.sidebar .submenu a:hover {
+    color: #420bea;
+}
+
+.sidebar .logout-btn {
+    text-align: center;
+    padding: 10px 20px;
+    background-color: #420bea;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    margin: 20px auto 0;
+    display: block;
+}
+
+.sidebar .logout-btn:hover {
+    background-color: #cc0000;
+}
+
+.content-container {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: #f5f6fa;
+}
+
+/* Table Styling */
+.table-container {
+    margin: 40px auto;
+    padding: 30px;
+    max-width: 95%;
+    max-height: 400px;
+    background: linear-gradient(135deg, #ffffff, #f4f8fc);
+    border-radius: 15px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    overflow-x: auto;
+    overflow-y: auto;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.table-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.table-header i {
+    color: #007bff;
+}
+
+.alumni-table {
+    width: 100%;
+    border-spacing: 0 10px;
+    font-size: 1rem;
+    color: #555;
+    border-radius: 10px;
+}
+
+.alumni-table th,
+.alumni-table td {
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Table Header Styling */
+.alumni-table th {
+    background: linear-gradient(180deg, #414040, #4b4949);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 18px 16px;  /* Reduced padding for a smaller header */
+    font-size: 0.9rem;   /* Reduced font size for a more compact look */
+    text-align: center;
+    border-bottom: 2px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, transform 0.3s ease;
+    animation: headerAppear 1s ease-in-out;
+}
+
+.alumni-table th:hover {
+    background: linear-gradient(180deg, #3e3d3d, #353535); /* Darker shade for hover effect */
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.alumni-table tbody tr {
+    background-color: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alumni-table tbody tr:hover {
+    background-color: rgba(77, 77, 77, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+.al-di{
+    margin-right: 10px;
+    padding: 10px;
+}
+ /* Responsive Styles */
+ @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .dashboard-grid,
+            .two-box-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 50px;
+            }
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table thead {
+            background: #81c784;
+            color: white;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table tbody tr:hover {
+            background: #f1f1f1;
+        }
+        table tbody tr td button {
+            padding: 8px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(100, 181, 246, 0.4);
+        }
+
+        .btn-accept {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: #fff;
+        }
+        /* Responsive Design */
+@media (max-width: 1024px) {
+    .table-container {
+        padding: 20px;
+        max-height: 300px;
+    }
+
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <img src="{% static 'login/Logo.png' %}" alt="Logo">
+            <h2>Periyar University Salem</h2>
+        </div>
+        <div class="horizontal-line"></div>
+        <div>
+            <a href="{% url 'dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" onclick="toggleSubmenu('alumniMenu')"><i class="fas fa-user-graduate"></i> Alumni
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="alumniMenu">
+                <a href="{% url 'alumni_directory' %}">Directory</a>
+            </div>
+            <a href="{% url 'admin_requests' %}"><i class="fas fa-users"></i> Requests</a>
+            <a href="#" onclick="toggleSubmenu('jobsMenu')"><i class="fas fa-briefcase"></i> Jobs
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="jobsMenu">
+                <a href="{% url 'jobs_statistics' %}">Statistics</a>
+            </div>
+            <a href="#" onclick="toggleSubmenu('storiesMenu')"><i class="fas fa-trophy"></i> Success Stories
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="storiesMenu">
+                <a href="{% url 'successstory_admin' %}">Stories</a>
+            </div>
+            <a href="{% url 'survey' %}"><i class="fas fa-poll"></i> Surveys</a>
+            <a href="{% url 'feedback' %}"><i class="fas fa-comments"></i> Feedback</a>
+            <a href="{% url 'newsletter' %}"><i class="fas fa-newspaper"></i> Newsletter</a>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+<div class="content-container">
+<div class="table-container">
+        <div class="table-header">
+            <h2><i class="fas fa-users"></i>  <div class="al-di"  >Student Requests</h2>
+        </div>
+    <table class="alumni-table fade-in">
+        <thead>
+            <tr>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-graduation-cap"></i> Degree</th>
+                <th><i class="fas fa-university"></i> Department</th>
+                <th><i class="fas fa-calendar-alt"></i> Graduation Year</th>
+                <th><i class="fas fa-file-alt"></i> Enrollment</th>
+                <th><i class="fas fa-info-circle"></i> Status</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_requests %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.degree }}</td>
+                    <td>{{ student.department }}</td>
+                    <td>{{ student.graduationYear }}</td>
+                    <td>{{ student.enrollmentDetails }}</td>
+                    <td>{{ student.status }}</td>
+                    <td>
+                        <form method="post" action="{% url 'accept_request' student.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-accept">Accept</button>
+                        </form>
+                        <form method="post" action="{% url 'reject_request' student.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-reject">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('visible');
+    }
+
+    function toggleSubmenu(menuId) {
+        const submenu = document.getElementById(menuId);
+        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+</body>
+</html>

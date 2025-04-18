@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs Statistics</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f5f6fa;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background-color: #ffffff;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-right: 1px solid #e0e0e0;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        .sidebar .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+        }
+
+        .sidebar .logo-container img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .sidebar .logo-container h2 {
+            font-family: 'Baloo', sans-serif;
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 1.2;
+            text-align: left;
+            margin: 0;
+        }
+
+        .horizontal-line {
+            width: 90%;
+            height: 1px;
+            background-color: #000000;
+            margin: 5px auto;
+        }
+
+        .sidebar a {
+            color: black;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-family: Tilt Neon;
+            font-weight: bold;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: rgba(66, 11, 234, 0.09);
+            color: #420bea;
+        }
+
+        .sidebar .submenu {
+            display: none;
+            padding-left: 20px;
+            font-family: Tilt Neon;
+            font-weight: bold;
+        }
+
+        .sidebar .submenu a {
+            font-size: 16px;
+            color: #080808;
+        }
+
+        .sidebar .submenu a:hover {
+            color: #420bea;
+        }
+
+        .sidebar .logout-btn {
+            text-align: center;
+            padding: 10px 20px;
+            background-color: #420bea;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            margin: 20px auto 0; /* This will center the button horizontally */
+            display: block; 
+        }
+
+        .sidebar .logout-btn:hover {
+            background-color: #cc0000;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00509e;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #00509e;
+        }
+
+        .card p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .card .icon {
+            font-size: 40px;
+            color: #420bea;
+            margin-bottom: 10px;
+        }
+        .two-column-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        
+
+        .box h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .export-button {
+            background-color: #420bea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .export-button:hover {
+            background-color: #00509e;
+        }
+
+        .content-container {
+            flex-grow: 1;
+            padding: 40px;
+            background-color: #f5f6fa;
+        }
+
+        .heading-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .heading {
+            font-family: Baloo;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .sub-heading {
+            font-size: 16px;
+            font-weight: 400;
+            color: #7d7d7d;
+            margin-top: 5px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-family: Afacad;
+        }
+        
+
+        .button-container button {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .button-container .white-button {
+            background-color: #ffffff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .button-container .add-alumni {
+            background-color: #0C04FC;
+            color: #ffffff;
+        }
+        .heading-contain{
+            display: flex;
+            
+        }
+
+        .heading-contain h3 {
+            margin: 0 15px; /* Light gap between each h3 element */
+            cursor: pointer; /* Change cursor on hover */
+        }
+
+        /* Hover effect to add underline */
+        .heading-contain h3:hover {
+            text-decoration: underline;
+        }
+        .dashboard-grid1{
+            background: #ECF1FF;
+
+        }
+        .dashboard-grid2{
+            background: #DFFFE1;
+
+        }
+        .dashboard-grid3{
+            background: #FFE7C6;
+        }
+        .dashboard-grid1 p{
+            color: #0901EC;
+        }
+        .dashboard-grid2 p{
+            color: #0F9F20;
+        }
+        .dashboard-grid3 p{
+            color: #DF8303;
+        }
+         /* Responsive Styles */
+         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .dashboard-grid,
+            .two-box-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 50px;
+            }
+        }
+        h2 { 
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .container1 {
+            width: 80%;
+            max-width: 1000px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar">
+        <div class="logo-container">
+            <img src="{% static 'login/Logo.png' %}" alt="Logo">
+            <h2>Periyar University Salem</h2>
+        </div>
+        <div class="horizontal-line"></div>
+        <div>
+            <a href="{% url 'dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" onclick="toggleSubmenu('alumniMenu')"><i class="fas fa-user-graduate"></i> Alumni
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="alumniMenu">
+                <a href="{% url 'alumni_directory' %}">Directory</a>
+            </div>
+            <a href="{% url 'admin_requests' %}"><i class="fas fa-users"></i> Requests</a>
+            <a href="#" onclick="toggleSubmenu('jobsMenu')"><i class="fas fa-briefcase"></i> Jobs
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="jobsMenu">
+                <a href="{% url 'jobs_statistics' %}">Statistics</a>
+            </div>
+            <a href="#" onclick="toggleSubmenu('storiesMenu')"><i class="fas fa-trophy"></i> Success Stories
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="storiesMenu">
+                <a href="{% url 'successstory_admin' %}">Stories</a>
+            </div>
+            <a href="#"><i class="fas fa-poll"></i> Surveys</a>
+            <a href="{% url 'feedback' %}"><i class="fas fa-comments"></i> Feedback</a>
+            <a href="{% url 'newsletter' %}"><i class="fas fa-newspaper"></i> Newsletter</a>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="logout-btn">Logout</button>
+        </form>
+
+    </div>
+    
+    <div class="content-container">
+        <!-- Header Section -->
+         <div class="box1">
+        <div class="heading-container">
+            <div>
+                <h1 class="heading">Alumni Directory</h1>
+                <p class="sub-heading">Comprehensive overview of your alumni network</p>
+            </div>
+           
+           
+       <!--     <div class="button-container">
+                <button class="white-button">Last Year</button>
+                <button class="white-button">All Batches</button>
+                <button class="white-button">Export</button>
+            </div> -->
+            
+
+        </div>
+     <!--   <div class="heading-contain">
+            <h3>Overview</h3>
+            <h3>Job Types</h3>
+            <h3>Skills Analysis</h3>
+        </div> -->
+    </div>
+    <div class="main-content">
+        
+        <div class="dashboard-grid">
+            <div class="card dashboard-grid1">
+                <p>{{ total_jobs|default:"0" }}</p>
+                <h3>Total Jobs</h3>
+            </div>
+            <div class="card dashboard-grid2">
+                <p>{{ total_companies|default:"0" }}</p>
+                <h3>Total Companies</h3>
+            </div>
+            <div class="card dashboard-grid3">
+                <p>{{ active_applications|default:"0" }}</p>
+                <h3>Active Applications</h3>
+            </div>
+        </div>
+        
+        
+        <div class="two-column-section">
+            <!-- Left Side: Bar Chart -->
+            <div class="container1">
+                <h2>Companies Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="companyChart"></canvas>
+                </div>
+            </div>
+    
+            <!-- Right Side: Pie Chart -->
+            <div class="box">
+                <h2>Job Types</h2>
+                <div class="chart-container">
+                    <canvas id="jobTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+</div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('visible');
+        }
+
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId);
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById("companyChart").getContext("2d");
+
+        const companyData = {
+            labels: {{ company_labels|safe }},  
+            datasets: [{
+                label: "Job Count",
+                data: {{ company_values|safe }},  
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 2,
+                hoverBackgroundColor: "rgba(255, 99, 132, 0.6)",
+                hoverBorderColor: "rgba(255, 99, 132, 1)"
+            }]
+        };
+
+        new Chart(ctx, {
+            type: "bar",
+            data: companyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1000, 
+                    easing: "easeOutBounce"
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<!-- Pie Chart Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const jobCtx = document.getElementById("jobTypeChart").getContext("2d");
+
+        const jobTypeData = {
+            labels: {{ job_type_labels|safe }},
+            datasets: [{
+                data: {{ job_type_values|safe }},
+                backgroundColor: [
+                    "rgba(255, 99, 132, 0.6)",
+                    "rgba(54, 162, 235, 0.6)",
+                    "rgba(255, 206, 86, 0.6)",
+                    "rgba(75, 192, 192, 0.6)",
+                    "rgba(153, 102, 255, 0.6)"
+                ],
+                borderColor: "#fff",
+                borderWidth: 2,
+                hoverOffset: 10
+            }]
+        };
+
+        new Chart(jobCtx, {
+            type: "pie",
+            data: jobTypeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    animateScale: true
+                },
+                plugins: {
+                    legend: {
+                        position: "top"
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

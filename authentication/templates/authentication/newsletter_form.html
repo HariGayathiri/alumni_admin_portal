@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #240596;
+            color: white;
+            width: 100%;
+        }
+
+        .back-btn-container {
+            display: inline-block;
+        }
+
+        .back-btn {
+            background-color: white;
+            color: #240596;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #6200ea;
+            color: white;
+        }
+
+        .newsletter-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .grid-container h2 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            padding: 10px 0;
+            font-family: 'Baloo', sans-serif;
+            color: #240596;
+        }
+
+        .title-grid label, .descriptor-container label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .title-grid input, .descriptor-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .upload-grid {
+            background-color: #E8E4E4;
+            width: 80%;
+            max-width: 300px;
+            height: 150px;
+            margin: 0 auto;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.3s, transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-grid:hover {
+            border: 2px solid black;
+            transform: scale(1.05);
+        }
+
+        .upload-grid input[type="file"] {
+            display: none;
+        }
+
+        .upload-grid label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .upload-icon {
+            font-size: 30px;
+            color: rgb(9, 9, 160);
+            margin-bottom: 10px;
+        }
+
+        .descriptor-container textarea {
+            height: 100px;
+        }
+
+        .uploaded-file-name {
+            font-size: 14px;
+            color: green;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            padding: 10px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;} 
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body onload="checkSuccess()">
+    <div class="header">
+        <div class="back-btn-container">
+            <a href="{% url 'newsletter' %}">
+                <button class="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+            </a>
+        </div>
+    </div>
+
+    <section class="newsletter-section">
+        <form id="newsletterForm" method="post" enctype="multipart/form-data" action="{% url 'newsletter_form_page' %}">
+            {% csrf_token %}
+            <div class="grid-container">
+                <h2>Upload Newsletter</h2>
+                <div class="title-grid">
+                    <label for="title">NEWSLETTER TITLE</label>
+                    <input type="text" id="title" name="title" placeholder="Enter Newsletter title" required>
+                </div>
+
+                <div class="upload-grid" onclick="document.getElementById('uploadImages').click();">
+                    <span class="iconify upload-icon" data-icon="material-symbols:upload-sharp"></span>
+                    <label for="uploadImages">Drag image here or click to upload</label>
+                    <input type="file" id="uploadImages" name="images" accept="image/*" onchange="showFileName(this)" required>
+                    <p class="uploaded-file-name" id="fileName"></p>
+                </div>
+
+                <div class="descriptor-container">
+                    <label for="description">DESCRIPTION</label>
+                    <textarea id="description" name="description" placeholder="Start writing your newsletter..." required></textarea>
+                </div>
+
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </section>
+
+    <div id="toast" class="toast">Invited Successfully!</div>
+
+    <script>
+        function showFileName(input) {
+            const fileName = input.files[0]?.name || "No file selected";
+            document.getElementById("fileName").innerText = fileName;
+        }
+
+        function checkSuccess() {
+            const success = "{{ success|yesno:'true,false' }}";
+            if (success === "true") {
+                const toast = document.getElementById("toast");
+                toast.className = "toast show";
+                setTimeout(() => {
+                    toast.className = toast.className.replace("show", "");
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1986 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Directory</title>
+    <!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-6Bsm3T0pcPGeUloBku60B+mHsEO0Cqj8PUHpEc9x9KAX2QPSbz96I1h9a/ufkdBt" crossorigin="anonymous">
+<!-- Bootstrap JS (Popper.js included) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-qL5fFxYOKnvXtPZHg4Csyfnpnwn01/rMdVECchEJWtQKeUJ1x3OKq3wgyIH9PpFc" crossorigin="anonymous"></script>
+
+<!-- Font Awesome for Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" integrity="sha384-pMjXONtJlDjciRphfhLafRR0Lbzg2B45sHq2Ffy/9MyFoycAU/vH+PjG9qMFgLeY" crossorigin="anonymous">
+
+  
+    <style>
+        body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f5f6fa;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-right: 1px solid #e0e0e0;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2000;
+    color: black;
+}
+
+.sidebar .logo-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+}
+
+.sidebar .logo-container img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.sidebar .logo-container h2 {
+    font-family: 'Baloo', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+    margin: 0;
+}
+
+.horizontal-line {
+    width: 90%;
+    height: 1px;
+    background-color: #000000;
+    margin: 5px auto;
+}
+
+.sidebar a {
+    color: black;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-family: Tilt Neon;
+    font-weight: bold;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: rgba(66, 11, 234, 0.09);
+    color: #420bea;
+}
+
+.sidebar .submenu {
+    display: none;
+    padding-left: 20px;
+    font-family: Tilt Neon;
+    font-weight: bold;
+}
+
+.sidebar .submenu a {
+    font-size: 16px;
+    color: #080808;
+}
+
+.sidebar .submenu a:hover {
+    color: #420bea;
+}
+
+.sidebar .logout-btn {
+    text-align: center;
+    padding: 10px 20px;
+    background-color: #420bea;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    margin: 20px auto 0;
+    display: block;
+}
+
+.sidebar .logout-btn:hover {
+    background-color: #cc0000;
+}
+
+.content-container {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: #f5f6fa;
+}
+
+.heading-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.heading {
+    font-family: Baloo;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.sub-heading {
+    font-size: 16px;
+    font-weight: 400;
+    color: #7d7d7d;
+    margin-top: 5px;
+}
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-family: Afacad;
+}
+
+.button-container button {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.button-container .white-button {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.button-container .add-alumni {
+    background-color: #0C04FC;
+    color: #ffffff;
+}
+
+/* Filters Section */
+.filters-container {
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filters-container input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f5f6fa;
+}
+
+/* Table Styling */
+.table-container {
+    margin: 40px auto;
+    padding: 30px;
+    max-width: 95%;
+    max-height: 400px;
+    background: linear-gradient(135deg, #ffffff, #f4f8fc);
+    border-radius: 15px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    overflow-x: auto;
+    overflow-y: auto;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.table-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.table-header i {
+    color: #007bff;
+}
+
+.alumni-table {
+    width: 100%;
+    border-spacing: 0 10px;
+    font-size: 1rem;
+    color: #555;
+    border-radius: 10px;
+}
+
+.alumni-table th,
+.alumni-table td {
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Table Header Styling */
+.alumni-table th {
+    background: linear-gradient(180deg, #414040, #4b4949);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 18px 16px;  /* Reduced padding for a smaller header */
+    font-size: 0.9rem;   /* Reduced font size for a more compact look */
+    text-align: center;
+    border-bottom: 2px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, transform 0.3s ease;
+    animation: headerAppear 1s ease-in-out;
+}
+
+.alumni-table th:hover {
+    background: linear-gradient(180deg, #3e3d3d, #353535); /* Darker shade for hover effect */
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.alumni-table tbody tr {
+    background-color: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alumni-table tbody tr:hover {
+    background-color: rgba(77, 77, 77, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .content-container {
+        padding: 20px;
+    }
+
+    .heading {
+        font-size: 20px;
+    }
+
+    .sub-heading {
+        font-size: 14px;
+    }
+
+    .filters-container {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 40px;
+    }
+
+    .button-container {
+        gap: 10px;
+    }
+
+    .button-container button {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    .table-container {
+        padding: 20px;
+        max-height: 300px;
+    }
+
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        padding: 15px;
+    }
+
+    .heading-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .heading {
+        font-size: 20px;
+    }
+
+    .sub-heading {
+        font-size: 14px;
+    }
+
+    .filters-container {
+        grid-template-columns: 1fr;
+        gap: 7px;
+    }
+
+    .filters-container input {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .button-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-container button {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .table-container {
+        padding: 15px;
+        max-height: 250px;
+    }
+
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .content-container {
+        padding: 10px;
+    }
+
+    .heading {
+        font-size: 18px;
+    }
+
+    .sub-heading {
+        font-size: 12px;
+    }
+
+    .filters-container {
+        padding: 8px;
+        gap: 10px;
+    }
+
+    .filters-container input {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .button-container button {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .table-container {
+        padding: 10px;
+        max-height: 200px;
+    }
+
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+}
+
+
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    text-transform: capitalize;
+    color: #fff;
+}
+
+.badge-active {
+    background: linear-gradient(90deg, #28a745, #218838);
+}
+
+.badge-inactive {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Edit Button */
+.btn-edit {
+    padding:10px;
+    width:90px;
+    background: #28a745;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #218838;
+}
+
+/* Delete Button */
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
+/* View Students Button */
+.view-students-btn {
+    border: 2px solid #007bff;
+    background: transparent;
+    color: #007bff;
+}
+
+.view-students-btn:hover {
+    background: #007bff;
+    color: #fff;
+}
+
+/* Add Student Button */
+.add-student-btn {
+   
+
+    background: transparent;
+    color: #28a745;
+}
+
+.add-student-btn:hover {
+ 
+    transform: scale(1.2);
+    color: #28a745;
+}
+
+/* Delete All Button */
+.delete-all-btn {
+    border: 2px solid #dc3545;
+    background: transparent;
+    color: #dc3545;
+}
+
+.delete-all-btn:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+
+    .table-header h2 {
+        font-size: 20px;
+    }
+
+    .table-container {
+        padding: 20px;
+    }
+}
+
+/* Modern Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+#overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Modal Form */
+#editForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(8px);
+    animation: slideIn 0.3s ease-out;
+    width: 400px;
+    max-width: 90%;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+/* Smooth Animation */
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+/* Input Fields */
+#editForm input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#editForm input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+    outline: none;
+}
+
+#editForm button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: 600;
+}
+
+#editForm button:hover {
+    background: #0056b3;
+}
+
+#editForm button:nth-child(2) {
+    background: #6c757d;
+}
+
+#editForm button:nth-child(2):hover {
+    background: #5a6268;
+}
+
+/* Header Styling */
+#editForm h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #222;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .alumni-table th,
+    .alumni-table td {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    .table-title {
+        font-size: 20px;
+    }
+}
+
+/* General Hidden Class */
+.hidden {
+    display: none;
+}
+
+/* Modern Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Slightly darker overlay for better focus */
+    z-index: 999;
+    backdrop-filter: blur(4px); /* Glassmorphism Effect */
+    transition: opacity 0.3s ease; /* Smooth fade-in/out effect */
+    opacity: 0;
+}
+
+
+/* General Button Styling */
+.btn {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover Effect with Animation */
+.btn:hover {
+    color: #fff;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Water Fill Effect for Hover */
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+
+    border-radius: 50%;
+    transition: all 2s ease-out;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: -1;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 15px;
+    text-align: left;
+}
+
+table th {
+    background-color: #4caf50;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        margin-bottom: 15px;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+    }
+
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+}
+/* Trigger Water Fill Effect on Hover */
+.btn:hover:before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Text Stays on Top */
+.btn span {
+    position: relative;
+    z-index: 1;
+}
+
+#overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Modern Modal Form */
+#editForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.85); /* Transparent white for glassmorphism */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Stronger shadow for depth */
+    backdrop-filter: blur(8px); /* Glassmorphism Effect */
+    animation: slideIn 0.3s ease-out; /* Smooth entrance animation */
+    width: 400px; /* Fixed width for better layout */
+    max-width: 90%;
+    font-family: 'Arial', sans-serif; /* Clean font for modern look */
+    color: #333; /* Professional text color */
+}
+
+/* Smooth Animation */
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+/* General Hidden Class */
+.hidden {
+    display: none;
+}
+
+/* General Hidden Class */
+.hidden {
+    display: none;
+}
+
+/* Modern Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    z-index: 999;
+    backdrop-filter: blur(5px); /* Slightly increased blur */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Compact Modal Form */
+#editForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: #ffffff; /* Clean white background */
+    padding: 60px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    width: 350px; /* Compact width */
+    max-width: 90%;
+    font-family: 'Roboto', sans-serif; /* Modern font */
+    color: #333; /* Neutral text color */
+    animation: slideIn 0.3s ease-out; /* Smooth animation */
+}
+
+/* Smooth Animation */
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
+}
+
+/* Input Fields */
+#editForm label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444; /* Slightly darker label color */
+    font-weight: 500;
+}
+
+#editForm input[type="text"] {
+    width: 100%; /* Full-width inputs */
+    padding: 8px 12px; /* Compact padding */
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#editForm input[type="text"]:focus {
+    border-color: #007bff; /* Blue border on focus */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.4); /* Subtle glow effect */
+    outline: none;
+}
+
+/* Buttons */
+#editForm button {
+    display: inline-block;
+    padding: 8px 16px; /* Compact button size */
+    margin-right: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    background: #007bff; /* Modern blue color */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+}
+
+#editForm button:hover {
+    background: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Subtle lift effect */
+}
+
+#editForm button:active {
+    transform: translateY(1px); /* Pressed effect */
+}
+
+#editForm button:nth-child(2) {
+    background: #6c757d; /* Muted gray for cancel button */
+}
+
+#editForm button:nth-child(2):hover {
+    background: #5a6268;
+}
+
+/* Header Styling */
+#editForm h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #222; /* Darker header color */
+    text-align: center; /* Centered title */
+    border-bottom: 1px solid #ddd; /* Subtle divider */
+    padding-bottom: 8px;
+}
+#newStatus{
+    width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd !important; 
+            border-radius: 6px; 
+            font-size: 14px !important; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.status{
+    display: inline-block; 
+        padding: 8px 16px; 
+        font-size: 13px; 
+        font-weight: 600; 
+        color: white; 
+        background: #007bff; 
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        transition: background 0.3s ease, transform 0.2s ease; 
+        text-transform: uppercase;
+}
+.al-di{
+    margin-right: 10px;
+    padding: 10px;
+}
+ /* Responsive Styles */
+ @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .dashboard-grid,
+            .two-box-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 50px;
+            }
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table thead {
+            background: #81c784;
+            color: white;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table tbody tr:hover {
+            background: #f1f1f1;
+        }
+        table tbody tr td button {
+            padding: 8px 10px;
+            margin: 2px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .button-delete {
+            background-color: #e57373;
+            color: white;
+        }
+        .button-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(229, 115, 115, 0.4);
+        }
+        button.edit {
+            background-color: #64b5f6;
+            color: white;
+        }
+        button.edit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(100, 181, 246, 0.4);
+        }
+        button i {
+            margin-right: 5px;
+        }
+        .form-container {
+            padding: 20px;
+            background: #fff;
+        }
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        form input, form select, form button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+        }
+        form input:focus, form select:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+        form button {
+            grid-column: span 2;
+            background: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        form button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+       /* Card Design Improvements */
+.card {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    transition: all 0.3s ease;
+    text-align: center;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.card .card-title {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.card .text-muted {
+    font-size: 1rem;
+    color: #7f8c8d;
+}
+
+.card .btn {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.card {
+    animation: fadeIn 0.6s ease-in-out;
+}
+/* Apply animation to icons */
+.icon-animation {
+    animation: fadeIn 0.5s ease-in-out, bounce 0.5s ease-in-out;
+}
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+/* For small screens like mobile */
+@media (max-width: 576px) {
+    #graphicalInterface {
+        max-height: 50vh; /* Slightly smaller height for smaller screens */
+        min-height: 30vh; /* Minimum height for small screens */
+    }
+}
+
+/* For larger mobile devices and tablets */
+@media (max-width: 768px) {
+    #graphicalInterface {
+        max-height: 55vh; /* Moderate height for medium screens */
+        min-height: 35vh; /* Slightly larger minimum height for medium screens */
+    }
+}
+
+/* For larger screens like laptops and desktops */
+@media (min-width: 1024px) {
+    #graphicalInterface {
+        max-height: 65vh; /* Standard height for larger screens */
+        min-height: 40vh; /* Standard minimum height for larger screens */
+    }
+}
+
+/* For very large screens like large desktops */
+@media (min-width: 1200px) {
+    #graphicalInterface {
+        max-height: 70vh; /* Slightly larger max height for very large screens */
+        min-height: 45vh; /* Larger minimum height for very large screens */
+    }
+}
+        /* Responsive Media Queries */
+        @media (max-width: 768px) {
+            /* Stack the cards vertically on smaller screens */
+            .card {
+                max-width: 100%; /* Cards should fill available space */
+                margin-bottom: 1rem;
+            }
+
+            /* Reduce font size for smaller screens */
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .text-muted {
+                font-size: 0.9rem;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-container">
+            <img src="{% static 'login/Logo.png' %}" alt="Logo">
+            <h2>Periyar University Salem</h2>
+        </div>
+        <div class="horizontal-line"></div>
+        <div>
+            <a href="{% url 'dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" onclick="toggleSubmenu('alumniMenu')"><i class="fas fa-user-graduate"></i> Alumni
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="alumniMenu">
+                <a href="{% url 'alumni_directory' %}">Directory</a>
+            </div>
+            <a href="{% url 'admin_requests' %}"><i class="fas fa-users"></i> Requests</a>
+            <a href="#" onclick="toggleSubmenu('jobsMenu')"><i class="fas fa-briefcase"></i> Jobs
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="jobsMenu">
+                <a href="{% url 'jobs_statistics' %}">Statistics</a>
+            </div>
+            <a href="#" onclick="toggleSubmenu('storiesMenu')"><i class="fas fa-trophy"></i> Success Stories
+                <span class="iconify" data-icon="mingcute:down-fill"></span>
+            </a>
+            <div class="submenu" id="storiesMenu">
+                <a href="{% url 'successstory_admin' %}">Stories</a>
+            </div>
+            <a href="{% url 'survey' %}"><i class="fas fa-poll"></i> Surveys</a>
+            <a href="{% url 'feedback' %}"><i class="fas fa-comments"></i> Feedback</a>
+            <a href="{% url 'newsletter' %}"><i class="fas fa-newspaper"></i> Newsletter</a>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+
+
+    <div class="content-container">
+        <!-- Header Section -->
+        <div class="heading-container">
+            <div>
+                <h1 class="heading">Alumni Directory</h1>
+                <p class="sub-heading">Manage and track your alumni network</p>
+            </div>
+           
+           
+            <div class="button-container">
+                <button class="white-button">Export Excel</button>
+                <button class="white-button">Export PDF</button>
+                
+                <!-- File upload and button -->
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="file" id="fileInput" accept=".xls,.xlsx" style="display: none;">
+                    <button class="white-button" id="uploadBtn" type="button">Upload Excel</button>
+                </form>
+            
+                <!-- Toast message for success -->
+                <div id="toast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px;">
+                    Excel file uploaded successfully!
+                </div>
+                
+                <div id="overlay" class="hidden"></div>
+                
+                <button class="add-alumni">Add Student</button>
+            
+            </div>
+            
+
+        </div>
+
+        <!-- Filters -->
+<div class="filters-container" style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px;">
+    <div style="flex: 1; min-width: 150px;">
+        <h2 style="font-family: Baloo; font-size: 20px; font-weight: 600; color: #333; margin-bottom: 15px;">Filters</h2>
+    </div>
+
+    <!-- Search Alumni -->
+    <div style="flex: 1; min-width: 150px;">
+        <input list="search-alumni" placeholder="Search Student">
+        <datalist id="search-alumni">
+            
+            <!-- Add more alumni names -->
+        </datalist>
+    </div>
+
+    <!-- All Degrees -->
+    <div style="flex: 1; min-width: 150px;">
+        <input list="all-degrees" placeholder="All Degrees">
+        <datalist id="all-degrees">
+            
+            <!-- Add more degrees -->
+        </datalist>
+    </div>
+
+    <!-- All Departments -->
+    <div style="flex: 1; min-width: 150px;">
+        <input list="all-departments" placeholder="All Departments">
+        <datalist id="all-departments">
+            
+            <!-- Add more departments -->
+        </datalist>
+    </div>
+
+    <!-- All Batches -->
+    <div style="flex: 1; min-width: 150px;">
+        <input list="all-batches" placeholder="All Batches">
+        <datalist id="all-batches">
+            <!-- Add more batches -->
+        </datalist>
+    </div>
+
+    <!-- Refresh Button -->
+    <div style="flex: 0 0 auto; padding-left: 10px;">
+        <button id="refresh-btn" onclick="refreshPage()" style="background-color: transparent; border: none; cursor: pointer;">
+            <i class="fa fa-sync-alt" style="font-size: 24px; color: #423ff5;"></i> <!-- Refresh Icon -->
+        </button>
+    </div>
+</div>
+
+<!-- Alumni Details Table -->
+<div class="table-container">
+    <div class="table-header">
+        <h2><i class="fas fa-users"></i>  <div class="al-di"  >Students Details</div></h2>
+    </div>
+    <table class="alumni-table fade-in">
+        <thead>
+            <tr>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-graduation-cap"></i> Degree</th>
+                <th><i class="fas fa-university"></i> Department</th>
+                <th><i class="fas fa-calendar-alt"></i> Graduation Year</th>
+                <th><i class="fas fa-file-alt"></i> Enrollment</th>
+                <th><i class="fas fa-info-circle"></i> Status</th>
+                <th><i class="fas fa-cogs"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop to Display Alumni Data -->
+            {% for alumni in alumni %}
+            <tr>
+                <td>{{ alumni.name }}</td>
+                <td>{{ alumni.email }}</td>
+                <td>{{ alumni.degree }}</td>
+                <td>{{ alumni.department }}</td>
+                <td>{{ alumni.graduationYear }}</td>
+                <td>{{ alumni.enrollmentDetails }}</td>
+                <td>
+                    <span class="badge {% if alumni.status == 'active' %}badge-active{% else %}badge-inactive{% endif %}">
+                        {{ alumni.status }}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-edit icon icon-animation" title="Edit Alumni"><i class="fas fa-edit "></i></button>
+                    <button class="btn btn-delete" title="Delete Alumni"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="no-data">No alumni found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+ 
+
+  <!-- Edit Form -->
+  
+
+  <div id="editForm" class="hidden">
+      <h2>Edit Alumni</h2>
+      <input type="hidden" id="editAlumniId">
+      <label for="editName">Name:</label>
+      <input type="text" id="editName" placeholder="Enter name">
+      <label for="editEmail">Email:</label>
+      <input type="text" id="editEmail" placeholder="Enter email">
+      <label for="editDegree">Degree:</label>
+      <input type="text" id="editDegree" placeholder="Enter degree">
+      <label for="editDepartment">Department:</label>
+      <input type="text" id="editDepartment" placeholder="Enter department">
+      <label for="editGraduationYear">Graduation Year:</label>
+      <input type="text" id="editGraduationYear" placeholder="Enter graduation year">
+      <label for="editEnrollmentDetails">Enrollment Details:</label>
+      <input type="text" id="editEnrollmentDetails" placeholder="Enter enrollment details">
+      <label for="editStatus">Status:</label>
+      <input type="text" id="editStatus" placeholder="Enter status (Student/Alumni)">
+      <button onclick="saveEditedData()">Save</button>
+      <button onclick="hideEditForm()">Cancel</button>
+  </div>
+  <div id="overlay" class="hidden"></div>
+
+
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('visible');
+        }
+
+        function toggleSubmenu(menuId) {
+            const submenu = document.getElementById(menuId);
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.2/papaparse.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        function applyFilters() {
+            const searchAlumni = document.querySelector('input[list="search-alumni"]').value.toLowerCase();
+            const degree = document.querySelector('input[list="all-degrees"]').value.toLowerCase();
+            const department = document.querySelector('input[list="all-departments"]').value.toLowerCase();
+            const graduationYear = document.querySelector('input[list="all-batches"]').value;
+    
+            const rows = document.querySelectorAll('table tbody tr');
+            let visibleRows = 0;
+    
+            rows.forEach(row => {
+                const name = row.children[0].textContent.toLowerCase();
+                const rowDegree = row.children[2].textContent.toLowerCase();
+                const rowDepartment = row.children[3].textContent.toLowerCase();
+                const rowYear = row.children[4].textContent;
+    
+                const matches = (!searchAlumni || name.includes(searchAlumni)) &&
+                    (!degree || rowDegree === degree) &&
+                    (!department || rowDepartment === department) &&
+                    (!graduationYear || rowYear === graduationYear);
+    
+                row.style.display = matches ? '' : 'none';
+                if (matches) visibleRows++;
+            });
+    
+            const noResultsRow = document.getElementById('no-results-row');
+            if (visibleRows === 0) {
+                if (!noResultsRow) {
+                    const tbody = document.querySelector('table tbody');
+                    const noResultsHtml = `
+                        <tr id="no-results-row">
+                            <td colspan="8" style="text-align: center; color: red;">No students found</td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', noResultsHtml);
+                }
+            } else if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        }
+    
+        // Attach event listeners to filter inputs
+        document.querySelectorAll('.filters-container input').forEach(input => {
+            input.addEventListener('input', applyFilters);
+        });
+    </script>
+    
+    <script>
+        document.querySelector('.button-container .white-button:nth-child(1)').addEventListener('click', exportExcel);
+        document.querySelector('.button-container .white-button:nth-child(2)').addEventListener('click', exportPDF);
+       // document.querySelector('.button-container .white-button:nth-child(3)').addEventListener('click', uploadExcel);
+        document.querySelector('.button-container .add-alumni').addEventListener('click', addAlumni);
+    
+        // 1. Export Excel
+        function exportExcel() {
+            const table = document.querySelector('table');
+            const workbook = XLSX.utils.table_to_book(table, {sheet: "Alumni Directory"});
+            XLSX.writeFile(workbook, 'Alumni_Directory.xlsx');
+            alert('Excel file exported successfully!');
+        }
+    
+        // 2. Export PDF
+    async function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Adding title
+        doc.text('Alumni Directory', 10, 10);
+
+        // Getting table data
+        const table = document.querySelector('table');
+        const rows = [...table.rows].map(row => [...row.cells].map(cell => cell.innerText));
+
+        // Using autoTable plugin for tables
+        doc.autoTable({
+            head: [rows[0]], // Header row (th elements)
+            body: rows.slice(1), // Data rows (td elements)
+            startY: 20, // Starting position
+        });
+
+        // Saving the PDF
+        doc.save('Alumni_Directory.pdf');
+        alert('PDF exported successfully!');
+    }
+    // Open file input when the button is clicked
+    document.getElementById('uploadBtn').addEventListener('click', function() {
+        document.getElementById('fileInput').click(); // Trigger the hidden file input
+    });
+
+    document.getElementById('uploadBtn').addEventListener('click', function () {
+  
+});
+
+document.getElementById('fileInput').addEventListener('change', function (event) {
+    const file = event.target.files[0]; // Get selected file
+    if (file) {
+        // Create FormData to send the file
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send file to the backend
+        fetch('/upload-excel/', { // Update with your Django URL endpoint
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Excel file uploaded successfully!');
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload the file.');
+        });
+    }
+});
+
+// Function to show toast message
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000); // Hide after 3 seconds
+}
+
+// Fetch and display alumni records
+function fetchAlumniData() {
+    fetch('/fetch_alumni/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const alumniList = data.data;
+                const tbody = document.querySelector('table tbody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                alumniList.forEach(alumni => {
+                    const row = `
+                        <tr id="alumni-${alumni.id}">
+                            <td>${alumni.name || ''}</td>
+                            <td>${alumni.email || ''}</td>
+                            <td>${alumni.degree || ''}</td>
+                            <td>${alumni.department || ''}</td>
+                            <td>${alumni.graduationYear || ''}</td>
+                            <td>${alumni.enrollmentDetails || ''}</td>
+                            <td class="add-student-btn">${alumni.status || ''}</td>
+                            <td>
+                                <button class="btn-edit icon-animation" onclick="editAlumni('${alumni.id}')"><i class="fas fa-edit"></i>Edit</button>
+                                <button class="btn-delete" onclick="deleteAlumni('${alumni.id}')"><i class="fas fa-trash"></i> Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                console.error('Error fetching alumni data:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+        // Show edit form with alumni data
+        function editAlumni(docId) {
+    console.log("Edit button clicked for:", docId);
+
+    fetch(`/fetch_alumni/${docId}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                const alumni = data.data;
+                document.getElementById('editAlumniId').value = docId;
+                document.getElementById('editName').value = alumni.name || '';
+                document.getElementById('editEmail').value = alumni.email || '';
+                document.getElementById('editDegree').value = alumni.degree || '';
+                document.getElementById('editDepartment').value = alumni.department || '';
+                document.getElementById('editGraduationYear').value = alumni.graduationYear || '';
+                document.getElementById('editEnrollmentDetails').value = alumni.enrollmentDetails || '';
+                document.getElementById('editStatus').value = alumni.status || '';
+                // Show the form
+                document.getElementById('editForm').classList.remove('hidden');
+
+                // Check for the overlay
+                const overlay = document.getElementById('overlay');
+                if (overlay) {
+                    overlay.style.display = 'block';
+                } else {
+                    console.warn("Overlay element is missing.");
+                }
+            } else {
+                console.error("Unexpected response status:", data.status);
+                alert("Failed to fetch alumni data. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error in editAlumni function:", error);
+            alert("An error occurred. Please check the console for details.");
+        });
+}
+
+
+function hideEditForm() {
+    // Hide the form and overlay
+    document.getElementById('editForm').classList.add('hidden');
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// Save edited alumni data
+        function saveEditedData() {
+    const docId = document.getElementById('editAlumniId').value;
+    const updatedData = {
+        name: document.getElementById('editName').value,
+        email: document.getElementById('editEmail').value,
+        degree: document.getElementById('editDegree').value,
+        department: document.getElementById('editDepartment').value,
+        graduationYear: document.getElementById('editGraduationYear').value,
+        enrollmentDetails: document.getElementById('editEnrollmentDetails').value,
+        status: document.getElementById('editStatus').value,
+    };
+
+    console.log("Saving data for:", docId, updatedData); // Debugging log
+
+    fetch(`/edit_alumni/${docId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert("Alumni updated successfully!");
+                hideEditForm();
+                fetchAlumniData(); // Refresh the table
+            } else {
+                console.error("Error updating alumni:", data.message);
+                alert("Failed to update alumni. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error in saveEditedData function:", error);
+            alert("An error occurred. Please check the console for details.");
+        });
+}
+
+        // Delete alumni record
+        function deleteAlumni(docId) {
+            if (confirm('Are you sure you want to delete this alumni?')) {
+                fetch(`/delete_alumni/${docId}/`, {
+                    method: 'DELETE',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Alumni deleted successfully!');
+                            fetchAlumniData();
+                        } else {
+                            alert('Error deleting alumni');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+     
+
+        // Load data on page load
+        fetchAlumniData();
+
+function refreshPage() {
+    location.reload();  // Reload the page
+}
+
+
+// 4. Add Alumni
+function addAlumni() {
+            const formHtml = `
+               <div id="addForm" style="
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    background: rgba(255, 255, 255, 0.85); 
+    border-radius: 12px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); 
+    width: 400px; 
+    max-width: 90%; 
+    padding: 30px; 
+    z-index: 1000; 
+    font-family: 'Roboto', sans-serif; 
+    color: #333; 
+    backdrop-filter: blur(8px);">
+    <h3 style="
+        margin-top: 0; 
+        margin-bottom: 15px; 
+        font-size: 18px; 
+        font-weight: 600; 
+        color: #222; 
+        text-align: center; 
+        border-bottom: 1px solid #ddd; 
+        padding-bottom: 8px;">
+        Add Alumni
+    </h3>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Name:
+        <input type="text" id="newName" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Email:
+        <input type="email" id="newEmail" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Degree:
+        <input type="text" id="newDegree" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Department:
+        <input type="text" id="newDepartment" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Graduation Year:
+        <input type="number" id="newYear" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Enrollment Details:
+        <input type="text" id="newEnrollment" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #444; font-weight: 500;">
+        Status:
+        <input type="text" id="newStatus" required style="
+            width: 90%; 
+            padding: 8px 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #ddd !important; 
+            border-radius: 6px; 
+            font-size: 14px !important; 
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;">
+    </label>
+
+    <button type="button" onclick="submitAlumni()" class="status" style="
+        display: inline-block; 
+        padding: 8px 16px; 
+        font-size: 13px; 
+        font-weight: 600; 
+        color: white; 
+        background: #007bff; 
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        transition: background 0.3s ease, transform 0.2s ease; 
+        text-transform: uppercase;">
+        Submit
+    </button>
+    <button type="button" onclick="closeForm()" style="
+        display: inline-block; 
+        padding: 8px 16px; 
+        font-size: 13px; 
+        font-weight: 600; 
+        color: white; 
+        background: #6c757d; 
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        transition: background 0.3s ease, transform 0.2s ease; 
+        text-transform: uppercase;">
+        Close
+    </button>
+</div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', formHtml);
+        }
+
+        // Function to submit alumni data
+        function submitAlumni() {
+    const name = document.getElementById('newName').value;
+    const email = document.getElementById('newEmail').value;
+    const degree = document.getElementById('newDegree').value;
+    const department = document.getElementById('newDepartment').value;
+    const year = document.getElementById('newYear').value;
+    const enrollment = document.getElementById('newEnrollment').value;
+    const status = document.getElementById('newStatus').value;
+
+    fetch('/upload-alumni/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: JSON.stringify([{
+            name, email, degree, department, graduationYear: year, enrollmentDetails: enrollment, status
+        }]),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Alumni data uploaded successfully.') {
+            alert('Alumni added successfully!');
+            fetchAlumniData();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error adding alumni:', error));
+}
+
+
+
+// Function to get CSRF token for Django
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+        // Function to close the form modal
+        function closeForm() {
+            const form = document.getElementById('addForm');
+            if (form) {
+                form.remove();
+            }
+        }
+
+        // Function to update the table after adding an alumni
+        function addToTable(name, email, degree, department, year, enrollment,status) {
+            const tableBody = document.querySelector('table tbody');
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `
+                <td>${name}</td>
+                <td>${email}</td>
+                <td>${degree}</td>
+                <td>${department}</td>
+                <td>${year}</td>
+                <td>${enrollment}</td>
+                <td>${status}</td>
+            `;
+        }
+    
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+    </script>
+    </body>
+</html>

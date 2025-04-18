@@ -1,0 +1,354 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal Login</title>
+    <!-- Link to Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo&family=Oleo+Script+Swash+Caps&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+   <style>
+        /* General styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, #6700AB 84%, #290045 100%);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;  /* Allow wrapping for responsiveness */
+            width: 100%;
+            max-width: 900px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* Left section styling */
+        .left-section {
+            background: linear-gradient(180deg, #370072 61%, #740092 97%, #92009A 100%);
+            color: #ffffff;
+            padding: 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left-section .logo img {
+            width: 180px;
+            height: auto;
+        }
+
+        .left-section h1 {
+            font-family: 'Oleo Script Swash Caps', cursive;
+            font-size: 30px;
+            font-weight: 400;
+            line-height: 55.32px;
+            text-align: left;
+        }
+
+        .left-section p {
+            font-size: 16px;
+            line-height: 1.6;
+            text-align: center;
+            font-family: Afacad;
+        }
+
+        .left-section h1 span {
+            display: block;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Right section styling */
+        .right-section {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .right-section h1 {
+            font-family: 'Baloo', sans-serif;
+            font-weight: bold;
+            font-size: 32px;
+            line-height: 50.37px;
+            text-align: center;
+            color: #6700AB;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-size: 20px;
+            color: #444444;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #6700AB;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #5a4dbc;
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 10px;
+            color: #6700AB;
+            text-decoration: none;
+            font-family: Afacad;
+            font-size: 20px;
+            font-weight: 400;
+            text-align: left;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            /* On mobile screens, make the layout stack vertically */
+            .main-container {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .left-section {
+                padding: 30px;
+                flex: 1;
+            }
+
+            .right-section {
+                padding: 20px;
+            }
+
+            .left-section h1 {
+                font-size: 24px;
+            }
+
+            .right-section h1 {
+                font-size: 28px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            .btn {
+                font-size: 14px;
+            }
+
+            .forgot-password {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-section h1 {
+                font-size: 20px;
+            }
+
+            .right-section h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .forgot-password {
+                font-size: 14px;
+            }
+        }
+                /* Modal styling */
+                .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <div class="logo">
+                <!-- Ensure correct path to logo -->
+                <img src="{% static 'login/Logo.png' %}" alt="Logo">
+
+            </div>
+            <h1>Welcome to Periyar University<br><span>Alumni Association</span></h1>
+            <p>Connect with your alumni network and manage your profile securely using this platform.</p>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <h1>Admin Portal Login</h1>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <a class="forgot-password" href="{% url 'admin_forgot_password' %}">Forgot your password?</a>
+            
+        </div>
+    </div>
+    <!-- Modal -->
+     <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <form id="reset-password-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="email"></label>
+                    <div style="position: relative;">
+                        <input type="email" id="email" >
+                       
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="new-password" required>
+                        <i class="fas fa-eye password-toggle" onclick="togglePassword('new-password')"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirm-password" required>
+                        <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm-password')"></i>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        document.getElementById('reset-password-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            fetch("{% url 'reset_password' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    new_password: newPassword,
+                    confirm_password: confirmPassword
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === 'success') {
+                        closeModal();
+                    }
+                })
+                .catch(error => alert('An error occurred.'));
+        });
+    </script>
+</body>
+</html>

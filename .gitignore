@@ -1,0 +1,8 @@
+
+*.pyc
+__pycache__/
+db.sqlite3
+alumniconnect-b407a-firebase-adminsdk-35dto-ea2199a869.json
+connectplatform-b89b4-268988303f18.json
+env/
+.env
